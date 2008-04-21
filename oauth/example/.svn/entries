@@ -1,0 +1,52 @@
+8
+
+dir
+517
+http://oauth.googlecode.com/svn/code/python/oauth/example
+http://oauth.googlecode.com/svn
+
+
+
+2008-02-15T22:52:20.087174Z
+479
+leah.culver
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+f7ae4463-c52f-0410-a7dc-93bad6e629e8
+
+client.py
+file
+
+
+
+
+2008-04-21T06:05:54.000000Z
+e65005143d923e7a376ac38039d4cf37
+2007-12-17T05:01:07.467995Z
+370
+leah.culver
+
+server.py
+file
+
+
+
+
+2008-04-21T06:05:54.000000Z
+a5c2ce41a08fa0392a17fc0cf0f7b4ee
+2008-02-15T22:52:20.087174Z
+479
+leah.culver
+

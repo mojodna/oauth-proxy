@@ -1,0 +1,2 @@
+This is an OAuth proxy.  It allows vanilla requests to be funneled through it and signed
+appropriately using OAuth.  For now, it only uses a single, pre-set access token.
