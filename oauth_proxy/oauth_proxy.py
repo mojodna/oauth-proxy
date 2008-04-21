@@ -6,7 +6,6 @@
 
 ## TODO
 # - provide a way of specifying access tokens (and possibly secrets, if not handled via lookup) - Basic Auth?
-# - allow configuration of SSL and PORT
 
 import sgmllib, re, urlparse
 from twisted.internet import ssl
@@ -15,11 +14,6 @@ import sys
 from twisted.python import log
 from oauth import oauth
 import cgi
-
-log.startLogging(sys.stdout)
-
-PROXY_PORT = 8001
-USE_SSL    = False
 
 # Container for OAuth credentials
 class OAuthCredentials:
@@ -44,7 +38,7 @@ class OAuthProxyClient(proxy.ProxyClient):
 		else:
 			params = {}
 
-		if USE_SSL:
+		if self.father.useSSL:
 			path = self.father.path.replace("http", "https", 1)
 		else:
 			path = self.father.path
@@ -76,15 +70,19 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 
 class OAuthProxyRequest(proxy.ProxyRequest):
 	protocols = {'http': OAuthProxyClientFactory}
-	if USE_SSL:
-		# Yes, this is correct; we want to map HTTP requests to HTTPS requests
-		ports = {'http': 443}
+	# if USE_SSL:
+	# 	# Yes, this is correct; we want to map HTTP requests to HTTPS requests
+	# 	ports = {'http': 443}
 
-	def __init__(self, oauthCredentials, *args):
+	def __init__(self, oauthCredentials, useSSL, *args):
 		self.oauthCredentials = oauthCredentials
+		self.useSSL = useSSL
 		proxy.ProxyRequest.__init__(self, *args)
-		# Since we magically mapped HTTP to HTTPS, we want to make sure that the transport knows as much
-		self._forceSSL = USE_SSL
+		
+		if self.useSSL:
+			# Since we magically mapped HTTP to HTTPS, we want to make sure that the transport knows as much
+			self._forceSSL = True
+			self.ports["http"] = 443
 
 	# Copied from proxy.ProxyRequest just so the reactor connection can be SSL
 	def process(self):
@@ -107,28 +105,30 @@ class OAuthProxyRequest(proxy.ProxyRequest):
 		clientFactory = class_(self.method, rest, self.clientproto, headers,
 							   s, self)
 		# The magic line for SSL support!
-		if USE_SSL:
+		if self.useSSL:
 			self.reactor.connectSSL(host, port, clientFactory, ssl.ClientContextFactory())
 		else:
 			self.reactor.connectTCP(host, port, clientFactory)
 
 
 class OAuthProxy(proxy.Proxy):
-	def __init__(self, oauthCredentials):
+	def __init__(self, oauthCredentials, useSSL):
 		self.oauthCredentials = oauthCredentials
+		self.useSSL = useSSL
 		proxy.Proxy.__init__(self)
 
 	def requestFactory(self, *args):
-		return OAuthProxyRequest(self.oauthCredentials, *args)
+		return OAuthProxyRequest(self.oauthCredentials, self.useSSL, *args)
 
 
 class OAuthProxyFactory(http.HTTPFactory):
-	def __init__(self, oauthCredentials):
+	def __init__(self, oauthCredentials, useSSL):
 		self.oauthCredentials = oauthCredentials
+		self.useSSL = useSSL
 		http.HTTPFactory.__init__(self)
 
 	def buildProtocol(self, addr):
-		protocol = OAuthProxy(self.oauthCredentials)
+		protocol = OAuthProxy(self.oauthCredentials, self.useSSL)
 		return protocol
 
 
@@ -140,6 +140,6 @@ if __name__ == "__main__":
 	accessTokenSecret = "access token secret"
 
 	credentials = OAuthCredentials(consumerKey, consumerSecret, accessToken, accessTokenSecret)
-	prox = OAuthProxyFactory(credentials)
+	prox = OAuthProxyFactory(credentials, False)
 	reactor.listenTCP(PROXY_PORT, prox)
 	reactor.run()

@@ -1,0 +1,3 @@
+register('oauth_proxy', 'oauth_proxy.tap',
+ description='OAuth HTTP proxy tap',
+ type='tap', tapname='oauth_proxy')
