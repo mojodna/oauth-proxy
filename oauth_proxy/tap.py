@@ -17,7 +17,7 @@ class Options(usage.Options):
 	optFlags = [['ssl', 's']]
 
 def makeService(config):
-	s = service.MultiService()
+	app = service.Application("oauth_proxy")
 
 	useSSL = config["ssl"]
 
@@ -34,6 +34,6 @@ def makeService(config):
 	credentials = oauth_proxy.OAuthCredentials(consumerKey, consumerSecret, token, tokenSecret)
 
 	proxy = internet.TCPServer(port, oauth_proxy.OAuthProxyFactory(credentials, useSSL))
-	proxy.setServiceParent(s)
+	proxy.setServiceParent(app)
 
-	return s
+	return app
