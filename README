@@ -6,3 +6,5 @@ mktap oauth_proxy --consumer_key <consumer key> --consumer_secret <consumer secr
 
 Start the generated tap (in the foreground):
 twistd -nf oauth_proxy.tap
+
+(For mktap to find oauth_proxy, you may need to make sure that "." is in your PYTHONPATH)
