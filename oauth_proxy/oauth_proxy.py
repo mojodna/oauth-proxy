@@ -15,13 +15,15 @@ from twisted.python import log
 from oauth import oauth
 import cgi
 
-# Container for OAuth credentials
 class OAuthCredentials:
-	def __init__(self, consumerKey, consumerSecret, accessToken = None, accessTokenSecret = None, signatureMethod = oauth.OAuthSignatureMethod_HMAC_SHA1()):
+	"""
+	A container for OAuth credentials
+	"""
+	def __init__(self, consumerKey, consumerSecret, token = None, tokenSecret = None, signatureMethod = oauth.OAuthSignatureMethod_HMAC_SHA1()):
 		self.oauthConsumer = oauth.OAuthConsumer(consumerKey, consumerSecret)
 		
-		if accessToken is not None and accessTokenSecret is not None:
-			self.oauthToken = oauth.OAuthToken(accessToken, accessTokenSecret)
+		if token is not None and tokenSecret is not None:
+			self.oauthToken = oauth.OAuthToken(token, tokenSecret)
 		else:
 			self.oauthToken = None
 			
@@ -70,9 +72,6 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 
 class OAuthProxyRequest(proxy.ProxyRequest):
 	protocols = {'http': OAuthProxyClientFactory}
-	# if USE_SSL:
-	# 	# Yes, this is correct; we want to map HTTP requests to HTTPS requests
-	# 	ports = {'http': 443}
 
 	def __init__(self, oauthCredentials, useSSL, *args):
 		self.oauthCredentials = oauthCredentials
@@ -130,16 +129,3 @@ class OAuthProxyFactory(http.HTTPFactory):
 	def buildProtocol(self, addr):
 		protocol = OAuthProxy(self.oauthCredentials, self.useSSL)
 		return protocol
-
-
-if __name__ == "__main__":
-	from twisted.internet import reactor
-	consumerKey = "consumer key"
-	consumerSecret = "consumer secret"
-	accessToken = "access token"
-	accessTokenSecret = "access token secret"
-
-	credentials = OAuthCredentials(consumerKey, consumerSecret, accessToken, accessTokenSecret)
-	prox = OAuthProxyFactory(credentials, False)
-	reactor.listenTCP(PROXY_PORT, prox)
-	reactor.run()
