@@ -12,8 +12,24 @@ from twisted.internet import ssl
 from twisted.web import proxy, http
 import sys
 from twisted.python import log
+from zope.interface import implements, Interface
 from oauth import oauth
 import cgi
+
+class IOAuthCredentialProvider(Interface):
+	"""An OAuth credential provider"""
+	
+	def fetchCredentials():
+		"""Fetch credentials"""
+
+class StaticOAuthCredentialProvider:
+	implements(IOAuthCredentialProvider)
+	
+	def __init__(self, credentials):
+		self.credentials = credentials
+	
+	def fetchCredentials(self):
+		return self.credentials
 
 class OAuthCredentials:
 	"""
@@ -32,7 +48,25 @@ class OAuthCredentials:
 
 class OAuthProxyClient(proxy.ProxyClient):
 	def connectionMade(self):
-		# this is where we make the donuts
+		# if retrieval of OAuth credentials is to be asynchronous, it needs to be done here (if it's even possible)
+		proxy.ProxyClient.connectionMade(self)
+
+
+class OAuthProxyClientFactory(proxy.ProxyClientFactory):
+	def buildProtocol(self, addr):
+		credentials = self.father.credentialProvider.fetchCredentials()
+		oauthRequest = self.signRequest(credentials)
+		
+		client = proxy.ProxyClientFactory.buildProtocol(self, addr)
+		# upgrade proxy.proxyClient object to OAuthProxyClient
+		client.__class__ = OAuthProxyClient
+		client.factory = self
+		
+		client.headers.update(oauthRequest.to_header())
+		return client
+
+	def signRequest(self, credentials):
+		"""Create an OAuthRequest and sign it"""
 		
 		# extract GET params into a list
 		if self.father.uri.find("?") > 0:
@@ -47,34 +81,23 @@ class OAuthProxyClient(proxy.ProxyClient):
 
 		# create an OAuth Request from the pieces that we've assembled
 		oauthRequest = oauth.OAuthRequest.from_consumer_and_token(
-			self.father.oauthCredentials.oauthConsumer,
-			self.father.oauthCredentials.oauthToken,
+			credentials.oauthConsumer,
+			credentials.oauthToken,
 			self.father.method,
 			path,
 			params
 		)
 		# now, sign it
-		oauthRequest.sign_request(self.father.oauthCredentials.signatureMethod, self.father.oauthCredentials.oauthConsumer, self.father.oauthCredentials.oauthToken)
+		oauthRequest.sign_request(credentials.signatureMethod, credentials.oauthConsumer, credentials.oauthToken)
 	    
-		self.headers.update(oauthRequest.to_header())
-		print "Header: ", self.headers["Authorization"]
-		
-		proxy.ProxyClient.connectionMade(self)
-
-
-class OAuthProxyClientFactory(proxy.ProxyClientFactory):
-	def buildProtocol(self, addr):
-		client = proxy.ProxyClientFactory.buildProtocol(self, addr)
-		# upgrade proxy.proxyClient object to OAuthProxyClient
-		client.__class__ = OAuthProxyClient
-		return client
+		return oauthRequest
 
 
 class OAuthProxyRequest(proxy.ProxyRequest):
 	protocols = {'http': OAuthProxyClientFactory}
 
-	def __init__(self, oauthCredentials, useSSL, *args):
-		self.oauthCredentials = oauthCredentials
+	def __init__(self, credentialProvider, useSSL, *args):
+		self.credentialProvider = credentialProvider
 		self.useSSL = useSSL
 		proxy.ProxyRequest.__init__(self, *args)
 		
@@ -111,21 +134,21 @@ class OAuthProxyRequest(proxy.ProxyRequest):
 
 
 class OAuthProxy(proxy.Proxy):
-	def __init__(self, oauthCredentials, useSSL):
-		self.oauthCredentials = oauthCredentials
+	def __init__(self, credentialProvider, useSSL):
+		self.credentialProvider = credentialProvider
 		self.useSSL = useSSL
 		proxy.Proxy.__init__(self)
 
 	def requestFactory(self, *args):
-		return OAuthProxyRequest(self.oauthCredentials, self.useSSL, *args)
+		return OAuthProxyRequest(self.credentialProvider, self.useSSL, *args)
 
 
 class OAuthProxyFactory(http.HTTPFactory):
-	def __init__(self, oauthCredentials, useSSL):
-		self.oauthCredentials = oauthCredentials
+	def __init__(self, credentialProvider, useSSL):
+		self.credentialProvider = credentialProvider
 		self.useSSL = useSSL
 		http.HTTPFactory.__init__(self)
 
 	def buildProtocol(self, addr):
-		protocol = OAuthProxy(self.oauthCredentials, self.useSSL)
+		protocol = OAuthProxy(self.credentialProvider, self.useSSL)
 		return protocol
