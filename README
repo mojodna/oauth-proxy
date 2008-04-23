@@ -8,3 +8,6 @@ Start the generated tap (in the foreground):
 twistd -nf oauth_proxy.tap
 
 (For mktap to find oauth_proxy, you may need to make sure that "." is in your PYTHONPATH)
+
+Or, just run it with twistd:
+twistd -n oauth_proxy --consumer_key <consumer key> --consumer_secret <consumer secret> [--token <token>] [--token_secret <token secret>] [-p <proxy port>] [--ssl]

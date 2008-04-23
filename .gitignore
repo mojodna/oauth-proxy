@@ -1,3 +1,4 @@
 *.tap
 *.pyc
-twistd.pid
+dropin.cache
+twistd.*

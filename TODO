@@ -1,0 +1,1 @@
+- create oauth_proxy.tac (similar to oauth_proxy/tap.py) for use with twistd, without requiring mktap (see http://twistedmatrix.com/projects/core/documentation/howto/application.html)

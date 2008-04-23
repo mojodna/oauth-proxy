@@ -7,20 +7,21 @@
 ## TODO
 # - provide a way of specifying access tokens (and possibly secrets, if not handled via lookup) - Basic Auth?
 
+import cgi
+from oauth import oauth
 import sgmllib, re, urlparse
+import sys
 from twisted.internet import ssl
 from twisted.web import proxy, http
-import sys
-from twisted.python import log
+from twisted.python import log, usage
 from zope.interface import implements, Interface
-from oauth import oauth
-import cgi
 
 class IOAuthCredentialProvider(Interface):
 	"""An OAuth credential provider"""
 	
 	def fetchCredentials():
 		"""Fetch credentials"""
+
 
 class StaticOAuthCredentialProvider:
 	implements(IOAuthCredentialProvider)
@@ -30,6 +31,7 @@ class StaticOAuthCredentialProvider:
 	
 	def fetchCredentials(self):
 		return self.credentials
+
 
 class OAuthCredentials:
 	"""
@@ -44,6 +46,20 @@ class OAuthCredentials:
 			self.oauthToken = None
 			
 		self.signatureMethod = signatureMethod
+
+
+class Options(usage.Options):
+	synopsis = "Usage: mktap oauth_proxy --consumer_key <consumer key> --consumer_secret <consumer secret> [--token <token>] [--token_secret <token secret>] [-p <proxy port>] [--ssl] "
+	longdesc = "Makes an OAuth HTTP proxy server.."
+	optParameters = [
+		['consumer_key', None, None, "OAuth Consumer Key"],
+		['consumer_secret', None, None, "OAuth Consumer Secret"],
+		['token', None, None, "OAuth Access/Request Token"],
+		['token_secret', None, None, "OAuth Access/Request Token Secret"],
+		['port', 'p', 8001, "Proxy port", int],
+	]
+
+	optFlags = [['ssl', 's']]
 
 
 class OAuthProxyClient(proxy.ProxyClient):
