@@ -11,7 +11,13 @@ import cgi
 from oauth import oauth
 import sgmllib, re, urlparse
 import sys
-from twisted.internet import ssl
+
+# don't include SSL if it's not installed
+try:
+  from twisted.internet import ssl
+except ImportError:
+  pass
+
 from twisted.web import proxy, http
 from twisted.python import log, usage
 from zope.interface import implements, Interface
