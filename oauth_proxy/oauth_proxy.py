@@ -92,12 +92,6 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 	def signRequest(self, credentials):
 		"""Create an OAuthRequest and sign it"""
 		
-		# extract GET params into a list
-		if self.father.uri.find("?") > 0:
-			params = cgi.parse_qs(self.father.uri.split('?', 1)[1], keep_blank_values = False)
-		else:
-			params = {}
-
 		if self.father.useSSL:
 			path = self.father.path.replace("http", "https", 1)
 		else:
@@ -109,8 +103,9 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 			credentials.oauthToken,
 			self.father.method,
 			path,
-			params
+			self.father.args
 		)
+
 		# now, sign it
 		oauthRequest.sign_request(credentials.signatureMethod, credentials.oauthConsumer, credentials.oauthToken)
 	    
