@@ -1,6 +1,5 @@
 from zope.interface import implements
 
-from twisted.python import usage
 from twisted.plugin import IPlugin
 from twisted.application.service import IServiceMaker
 from twisted.application import internet
@@ -16,11 +15,11 @@ class OAuthProxyServiceMaker(object):
     def makeService(self, options):
 		useSSL = options["ssl"]
 
-		consumerKey = options["consumer_key"]
-		consumerSecret = options["consumer_secret"]
-		if options.has_key("token") and options.has_key("token_secret"):
+		consumerKey = options["consumer-key"]
+		consumerSecret = options["consumer-secret"]
+		if options.has_key("token") and options.has_key("token-secret"):
 			token = options["token"]
-			tokenSecret = options["token_secret"]
+			tokenSecret = options["token-secret"]
 		else:
 			token = tokenSecret = None
 

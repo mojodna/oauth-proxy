@@ -55,13 +55,13 @@ class OAuthCredentials:
 
 
 class Options(usage.Options):
-	synopsis = "Usage: mktap oauth_proxy --consumer_key <consumer key> --consumer_secret <consumer secret> [--token <token>] [--token_secret <token secret>] [-p <proxy port>] [--ssl] "
-	longdesc = "Makes an OAuth HTTP proxy server.."
+	synopsis = "Usage: oauth_proxy --consumer-key <consumer key> --consumer-secret <consumer secret> [--token <token>] [--token-secret <token secret>] [-p <proxy port>] [--ssl]"
+	longdesc = "An OAuth HTTP proxy server.."
 	optParameters = [
-		['consumer_key', None, None, "OAuth Consumer Key"],
-		['consumer_secret', None, None, "OAuth Consumer Secret"],
+		['consumer-key', None, None, "OAuth Consumer Key"],
+		['consumer-secret', None, None, "OAuth Consumer Secret"],
 		['token', None, None, "OAuth Access/Request Token"],
-		['token_secret', None, None, "OAuth Access/Request Token Secret"],
+		['token-secret', None, None, "OAuth Access/Request Token Secret"],
 		['port', 'p', 8001, "Proxy port", int],
 	]
 
@@ -71,6 +71,8 @@ class Options(usage.Options):
 class OAuthProxyClient(proxy.ProxyClient):
 	def connectionMade(self):
 		# if retrieval of OAuth credentials is to be asynchronous, it needs to be done here (if it's even possible)
+		# otherwise, this class has no point
+		# however, it's possible that reading headers can't happen in OAuthProxyClientFactory
 		proxy.ProxyClient.connectionMade(self)
 
 

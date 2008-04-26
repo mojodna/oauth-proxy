@@ -11,11 +11,11 @@ def makeService(config):
 
 	useSSL = config["ssl"]
 
-	consumerKey = config["consumer_key"]
-	consumerSecret = config["consumer_secret"]
-	if config.has_key("token") and config.has_key("token_secret"):
+	consumerKey = config["consumer-key"]
+	consumerSecret = config["consumer-secret"]
+	if config.has_key("token") and config.has_key("token-secret"):
 		token = config["token"]
-		tokenSecret = config["token_secret"]
+		tokenSecret = config["token-secret"]
 	else:
 		token = tokenSecret = None
 
