@@ -13,6 +13,8 @@ class OAuthProxyServiceMaker(object):
     options = oauth_proxy.Options
 
     def makeService(self, options):
+        # TODO add error handling for missing params
+        
 		useSSL = options["ssl"]
 
 		consumerKey = options["consumer-key"]

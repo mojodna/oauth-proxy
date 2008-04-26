@@ -1,6 +1,8 @@
 This is an OAuth proxy.  It allows vanilla requests to be funneled through it and signed
 appropriately using OAuth.  For now, it only uses a single, pre-set access token.
 
+A skeleton also exists for a reverse proxy.  No OAuth signature validation is done yet, so go for it!
+
 To create an OAuth proxy server:
 mktap oauth_proxy --consumer-key <consumer key> --consumer-secret <consumer secret> [--token <token>] [--token-secret <token secret>] [-p <proxy port>] [--ssl]
 

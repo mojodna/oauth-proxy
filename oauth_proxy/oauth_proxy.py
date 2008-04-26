@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 ## Implementation of an OAuth HTTP proxy
 # Adapted from Example 4-8, Twisted Network Programming Essentials by Abe Fettig. Copyright 2005 O'Reilly & Associates.
 # Adapted by Seth Fitzsimmons <seth@mojodna.net>
