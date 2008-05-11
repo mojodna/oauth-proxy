@@ -22,17 +22,17 @@ from zope.interface import implements, Interface
 
 class IOAuthCredentialProvider(Interface):
 	"""An OAuth credential provider"""
-	
+
 	def fetchCredentials():
 		"""Fetch credentials"""
 
 
 class StaticOAuthCredentialProvider:
 	implements(IOAuthCredentialProvider)
-	
+
 	def __init__(self, credentials):
 		self.credentials = credentials
-	
+
 	def fetchCredentials(self):
 		return self.credentials
 
@@ -43,12 +43,12 @@ class OAuthCredentials:
 	"""
 	def __init__(self, consumerKey, consumerSecret, token = None, tokenSecret = None, signatureMethod = oauth.OAuthSignatureMethod_HMAC_SHA1()):
 		self.oauthConsumer = oauth.OAuthConsumer(consumerKey, consumerSecret)
-		
+
 		if token is not None and tokenSecret is not None:
 			self.oauthToken = oauth.OAuthToken(token, tokenSecret)
 		else:
 			self.oauthToken = None
-			
+
 		self.signatureMethod = signatureMethod
 
 
@@ -78,18 +78,18 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 	def buildProtocol(self, addr):
 		credentials = self.father.credentialProvider.fetchCredentials()
 		oauthRequest = self.signRequest(credentials)
-		
+
 		client = proxy.ProxyClientFactory.buildProtocol(self, addr)
 		# upgrade proxy.proxyClient object to OAuthProxyClient
 		client.__class__ = OAuthProxyClient
 		client.factory = self
-		
+
 		client.headers.update(oauthRequest.to_header())
 		return client
 
 	def signRequest(self, credentials):
 		"""Create an OAuthRequest and sign it"""
-		
+
 		if self.father.useSSL:
 			path = self.father.path.replace("http", "https", 1)
 		else:
@@ -97,9 +97,9 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 
 		# python parses arguments into a dict of arrays, e.g. 'q=foo' becomes {'q': ['foo']}
 		# while from_consumer_and_token expects a dict of strings, so we cross our fingers,
-		# hope there are no repeated arguments ('q=foo&q=bar'), and take the first value of
+		# hope there are no repeated arguments ('q=foo&q=bar'), and take the last value of
 		# each array.
-		args = dict([(k,v[0]) for k,v in self.father.args.items()])
+		args = dict([(k,v[-1]) for k,v in self.father.args.items()])
 
 		# create an OAuth Request from the pieces that we've assembled
 		oauthRequest = oauth.OAuthRequest.from_consumer_and_token(
@@ -112,7 +112,9 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 
 		# now, sign it
 		oauthRequest.sign_request(credentials.signatureMethod, credentials.oauthConsumer, credentials.oauthToken)
-		
+
+		# TODO add X-Forwarded-For headers
+
 		return oauthRequest
 
 
@@ -123,7 +125,7 @@ class OAuthProxyRequest(proxy.ProxyRequest):
 		self.credentialProvider = credentialProvider
 		self.useSSL = useSSL
 		proxy.ProxyRequest.__init__(self, *args)
-		
+
 		if self.useSSL:
 			# Since we magically mapped HTTP to HTTPS, we want to make sure that the transport knows as much
 			self._forceSSL = True
