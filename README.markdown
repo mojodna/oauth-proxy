@@ -1,4 +1,4 @@
-# OAuth Reverse Proxy
+# OAuth Proxy
 
 I am an OAuth proxy server.  You can pass unsigned requests to me and I will sign them using [OAuth](http://oauth.net/ "OAuth") before sending them to their eventual destination.
 
