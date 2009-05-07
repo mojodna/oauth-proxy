@@ -60,7 +60,7 @@ class Options(usage.Options):
 		['consumer-secret', None, None, "OAuth Consumer Secret"],
 		['token', None, None, "OAuth Access/Request Token"],
 		['token-secret', None, None, "OAuth Access/Request Token Secret"],
-		['port', 'p', 8001, "Proxy port", int],
+		['port', 'p', 8001, "Proxy port"],
 	]
 
 	optFlags = [['ssl', 's']]
