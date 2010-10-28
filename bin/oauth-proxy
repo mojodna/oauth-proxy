@@ -1,0 +1,3 @@
+#!/bin/sh
+
+twistd -n oauth_proxy $*
