@@ -53,8 +53,8 @@ class OAuthCredentials:
 
 
 class Options(usage.Options):
-	synopsis = "Usage: oauth_proxy --consumer-key <consumer key> --consumer-secret <consumer secret> [--token <token>] [--token-secret <token secret>] [-p <proxy port>] [--ssl]"
-	longdesc = "An OAuth HTTP proxy server.."
+	synopsis = "--consumer-key <consumer key> --consumer-secret <consumer secret> [--token <token>] [--token-secret <token secret>] [-p <proxy port>] [--ssl]"
+	longdesc = "An OAuth HTTP proxy server."
 	optParameters = [
 		['consumer-key', None, None, "OAuth Consumer Key"],
 		['consumer-secret', None, None, "OAuth Consumer Secret"],
@@ -64,6 +64,10 @@ class Options(usage.Options):
 	]
 
 	optFlags = [['ssl', 's']]
+
+        def postOptions(self):
+            if self['consumer-key'] is None or self['consumer-secret'] is None:
+                raise usage.UsageError, "Your consumer key and secret must be provided."
 
 
 class OAuthProxyClient(proxy.ProxyClient):
