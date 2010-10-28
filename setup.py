@@ -2,19 +2,18 @@
 
 from setuptools import setup, find_packages
 
-def refresh_plugin_cache():
-    from twisted.plugin import IPlugin, getPlugins
-    list(getPlugins(IPlugin))
-
 setup(
     name="oauth-proxy",
-    version="1.0.1",
+    version="1.0.3",
     url="http://github.com/mojodna/oauth-proxy",
     license="BSD License",
     description="OAuth HTTP proxy",
     long_description="An OAuth proxy server that signs requests w/ provided tokens and passes them on to their original destination.",
     keywords="oauth proxy twisted",
-    packages=find_packages(),
+    packages=[
+        "oauth_proxy",
+        "twisted.plugins",
+    ],
     package_data={
         "twisted": ["plugins/proxy.py"]
     },
@@ -29,5 +28,3 @@ setup(
         "License :: OSI Approved :: BSD License",
     ],
 )
-
-refresh_plugin_cache()
