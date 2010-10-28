@@ -2,3 +2,8 @@
 *.pyc
 dropin.cache
 twistd.*
+.Python
+bin/
+*.egg-info
+include/
+lib/
