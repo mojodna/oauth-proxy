@@ -8,7 +8,7 @@ def refresh_plugin_cache():
 
 setup(
     name="oauth-proxy",
-    version="1.0.0",
+    version="1.0.1",
     url="http://github.com/mojodna/oauth-proxy",
     license="BSD License",
     description="OAuth HTTP proxy",
