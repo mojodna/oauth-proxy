@@ -8,6 +8,7 @@ setup(
     url="http://github.com/mojodna/oauth-proxy",
     license="BSD License",
     description="OAuth HTTP proxy",
+    long_description="An OAuth proxy server that signs requests w/ provided tokens and passes them on to their original destination.",
     keywords="oauth proxy twisted",
     packages=find_packages(),
     scripts=["bin/oauth-proxy"],
