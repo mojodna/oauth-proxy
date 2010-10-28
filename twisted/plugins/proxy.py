@@ -25,7 +25,7 @@ class OAuthProxyServiceMaker(object):
 		else:
 			token = tokenSecret = None
 
-		port = options["port"]
+		port = int(options["port"])
 
 		credentials = oauth_proxy.OAuthCredentials(consumerKey, consumerSecret, token, tokenSecret)
 		credentialProvider = oauth_proxy.StaticOAuthCredentialProvider(credentials)
