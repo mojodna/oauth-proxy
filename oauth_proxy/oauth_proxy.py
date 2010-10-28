@@ -103,11 +103,11 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 
 		# create an OAuth Request from the pieces that we've assembled
 		oauthRequest = oauth.OAuthRequest.from_consumer_and_token(
-			credentials.oauthConsumer,
-			credentials.oauthToken,
-			self.father.method,
-			path,
-			args
+			oauth_consumer=credentials.oauthConsumer,
+			token=credentials.oauthToken,
+			http_method=self.father.method,
+			http_url=path,
+			parameters=args,
 		)
 
 		# now, sign it
