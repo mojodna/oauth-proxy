@@ -1,5 +1,0 @@
-From:
-http://oauth.googlecode.com/svn/code/python/oauth/
-
-Modifications:
-Signature is now escaped on line 167
