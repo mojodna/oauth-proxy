@@ -7,3 +7,5 @@ bin/
 *.egg-info
 include/
 lib/
+build/
+dist/
