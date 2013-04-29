@@ -103,7 +103,7 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 		# while from_consumer_and_token expects a dict of strings, so we cross our fingers,
 		# hope there are no repeated arguments ('q=foo&q=bar'), and take the last value of
 		# each array.
-		args = dict([(k,v[-1]) for k,v in self.father.args.items()])
+		args = dict((k,v[-1]) for k,v in self.father.args.items())
 
 		# create an OAuth Request from the pieces that we've assembled
 		oauthRequest = oauth.OAuthRequest.from_consumer_and_token(
