@@ -103,7 +103,7 @@ class OAuthProxyClientFactory(proxy.ProxyClientFactory):
 		# while from_consumer_and_token expects a dict of strings, so we cross our fingers,
 		# hope there are no repeated arguments ('q=foo&q=bar'), and take the last value of
 		# each array.
-		args = dict([(k,v[-1]) for k,v in self.father.args.items()])
+		args = dict((k,v[-1]) for k,v in self.father.args.items())
 
 		# create an OAuth Request from the pieces that we've assembled
 		oauthRequest = oauth.OAuthRequest.from_consumer_and_token(
@@ -137,6 +137,10 @@ class OAuthProxyRequest(proxy.ProxyRequest):
 
 	# Copied from proxy.ProxyRequest just so the reactor connection can be SSL
 	def process(self):
+		headers = self.getAllHeaders().copy()
+		if self.uri.startswith('/'):
+			self.uri = 'http://' + headers['host'] + self.uri
+			self.path = self.uri
 		parsed = urlparse.urlparse(self.uri)
 		protocol = parsed[0]
 		host = parsed[1]
@@ -148,7 +152,6 @@ class OAuthProxyRequest(proxy.ProxyRequest):
 		if not rest:
 			rest = rest + '/'
 		class_ = self.protocols[protocol]
-		headers = self.getAllHeaders().copy()
 		if 'host' not in headers:
 			headers['host'] = host
 		self.content.seek(0, 0)
