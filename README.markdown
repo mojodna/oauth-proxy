@@ -1,5 +1,11 @@
 # OAuth Proxy
 
+**NOTE**: If you're having trouble installing this, there's an [equivalent
+JavaScript version
+(mojodna/node-oauth-proxy)](https://github.com/mojodna/node-oauth-proxy)
+that's installed via `npm install -g oauth-proxy` (once you've installed
+[Node.js](http://nodejs.org/)).  It's intended to be drop-in compatible.
+
 I am an OAuth proxy server. You can pass unsigned requests to me and I will
 sign them using [OAuth](http://oauth.net/ "OAuth") before sending them to
 their eventual destination.
