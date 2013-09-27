@@ -10,7 +10,7 @@ setup(
     description="OAuth HTTP proxy",
     long_description="An OAuth proxy server that signs requests w/ provided tokens and passes them on to their original destination.",
     keywords="oauth proxy twisted",
-    packages=find_packages(),
+    packages=['oauth_proxy', 'twisted.plugins'],
     package_data={
         "twisted": ["plugins/proxy.py"]
     },
