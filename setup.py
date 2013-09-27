@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="oauth-proxy",
-    version="1.0.4",
+    version="1.0.5",
     url="http://github.com/mojodna/oauth-proxy",
     license="BSD License",
     description="OAuth HTTP proxy",
